@@ -1,66 +1,97 @@
-# Focus
+# Focus Desaturate
 
-A quick GNOME extension for apply transparency to inactive windows.
+Forked from https://github.com/scaryrawr/gnome-focus
 
-![demo](./assets/demo.gif)
+A GNOME Shell extension that desaturates inactive windows, helping you focus on your active window. This extension provides a clean and distraction-free desktop environment by reducing the visual impact of background windows.
 
-## Settings
+## Features
 
-Can be found in Gnome Tweaks -> Extensions -> Focus.
+- Automatic desaturation of inactive windows
+- Configurable desaturation levels
+- Special focus list for custom window handling
+- Ignore list for windows that should remain unaffected
+- Easy-to-use preferences window
+
+## Installation
+
+### From GNOME Extensions Website
+Visit [GNOME Extensions - Focus Desaturate](https://extensions.gnome.org/extension/3924/focus-desaturate/) and toggle the switch to install.
+
+### Manual Installation
+```bash
+yarn package:install
+```
+
+After installation, restart GNOME Shell:
+- Press Alt+F2
+- Type 'r' and press Enter
+
+## Configuration
+
+### Extension Preferences
+Access the extension settings through:
+1. GNOME Extensions app
+2. Select "Focus Desaturate" settings
 
 ### Special Focus List
-
-A special focus list can be created at `~/.config/Focus/special_focus.json`.
-
-Windows that match the list criteria will have an opacity applied to them that can be adjusted in the Extension Preference Window.
-
-It uses the WM_CLASS (use `xprop` to help figure them out).
+Create a file at `~/.config/FocusDesaturate/special_focus_desaturate.json`:
 
 ```json
 [
     "Code",
-    "Code - Insiders"
+    "Firefox",
+    "Terminal"
 ]
 ```
 
-## Ignore List
+Windows in this list will have custom desaturation settings that can be adjusted in preferences.
 
-An ignore list can be created at `~/.config/Focus/ignore_focus.json`.
-
-Windows that match the list criteria will not have their opacity modified even when inactive.
-
-It uses the WM_CLASS (use `xprop` to help figure them out). The below example lets Firefox's Picture-in-Picture keep 100% opacity.
+### Ignore List
+Create a file at `~/.config/FocusDesaturate/ignore_focus_desaturate.json`:
 
 ```json
 [
-    "Toolkit"
+    "Toolkit",
+    "zoom"
 ]
 ```
 
-## Installing
+Windows in this list will never be desaturated, regardless of focus state.
 
-[GNOME Extensions - Focus](https://extensions.gnome.org/extension/3924/focus/)
+## Development
 
-## Repo Guide
+### Prerequisites
+- Node.js
+- Yarn
+- GNOME Shell
 
-Thanks to [gjsify](https://gjsify.org/pages/projects) the build process has gotten a lot easier (no need to manually generate types using gobject-introspection), and you can actually build non-Linux systems. I recommend only installing on Linux though.
-
-### Build
-
-Currently, building doesn't produce expected errors (need to figure out [esbuild](https://esbuild.github.io/)).
-
+### Building
 ```bash
+# Install dependencies
+yarn install
+
+# Build the extension
 yarn build
-```
 
-### Packaging for [GNOME Extensions](https://extensions.gnome.org/)
-
-```bash
+# Package for distribution
 yarn build:package
-```
 
-### Installing Locally
-
-```bash
+# Install locally
 yarn package:install
 ```
+
+### Finding Window Classes
+To find a window's WM_CLASS (needed for special focus or ignore lists):
+```bash
+xprop | grep WM_CLASS
+```
+Then click on the window you want to identify.
+
+## License
+MIT
+
+## Author
+Frieser
+
+## Contributing
+Contributions are welcome! Feel free to submit issues and pull requests on GitHub.

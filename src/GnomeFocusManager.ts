@@ -1,10 +1,9 @@
 import Meta from 'gi://Meta';
 import Shell from 'gi://Shell';
+import Clutter from 'gi://Clutter';
 
 import { FocusSettings } from './settings.js';
 
-/** 100% opacity value */
-const DEFAULT_OPACITY = 255;
 
 /** Effect that has background blur */
 const BLUR_EFFECT_NAME = 'gnome-focus-blur';
@@ -75,12 +74,22 @@ export class GnomeFocusManager {
       return;
     }
 
-    const true_opacity = (DEFAULT_OPACITY * percentage) / 100;
+    // Remove existing desaturation effects first
     for (const actor of window_actor.get_children()) {
-      actor.set_opacity(true_opacity);
+      actor.clear_effects();
     }
+    window_actor.clear_effects();
 
-    window_actor.set_opacity(true_opacity);
+    // Only apply desaturation if it's not 100%
+    if (percentage < 100) {
+      const desaturation_level = percentage / 100;
+      const effect = new Clutter.DesaturateEffect({ factor: desaturation_level });
+      
+      for (const actor of window_actor.get_children()) {
+        actor.add_effect(effect);
+      }
+      window_actor.add_effect(effect);
+    }
   }
 
   static set_blur(window_actor: Meta.WindowActor, blur: boolean, sigma: number): void {
@@ -137,11 +146,11 @@ export class GnomeFocusManager {
     }
 
     this.active_window_actor = window_actor;
-    const opacity = this.is_special(this.active_window_actor)
+    const desaturation = this.is_special(this.active_window_actor)
       ? this.settings.special_focus_opacity
       : this.settings.focus_opacity;
 
-    GnomeFocusManager.set_opacity(this.active_window_actor, opacity);
+    GnomeFocusManager.set_opacity(this.active_window_actor, desaturation);
     GnomeFocusManager.set_blur(this.active_window_actor, this.settings.is_background_blur, this.settings.blur_sigma);
 
     this.active_destroy_signal = this.active_window_actor.connect('destroy', actor => {
